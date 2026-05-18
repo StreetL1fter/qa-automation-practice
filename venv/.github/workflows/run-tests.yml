@@ -1,27 +1,21 @@
-name: Automated UI and API Tests
+name: Automated Tests
 
-# 1. Настраиваем триггер: запускать тесты при каждом пуше в ветку master (или main)
 on:
   push:
-    branches: [ master, main ]
-  pull_request:
-    branches: [ master, main ]
+    branches:
+      - master
+      - main
 
 jobs:
   run-tests:
-    # 2. Берем чистую виртуальную машину с Linux (Ubuntu) на сервере GitHub
     runs-on: ubuntu-latest
 
     steps:
-      # Шаг 3: Скачиваем твой код из репозитория на эту виртуальную машину
-      - name: Checkout repository code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Шаг 4: Собираем твой Docker-образ (точно так же, как делали через docker build)
       - name: Build Docker Image
         run: docker build -t wb-automation-tests .
 
-      # Шаг 5: Запускаем тесты внутри контейнера
-      # (Флаг -t здесь убираем, так как в CI нет интерактивного терминала, TTY)
       - name: Run Tests inside Docker
         run: docker run --rm wb-automation-tests
