@@ -17,7 +17,7 @@ def test_registration_form(registration_page,first_name,last_name,email,phone):
     assert is_visible
         
 @pytest.mark.parametrize("bad_email,error_text",
-    [("ivan.com","Введите данные в указанном формате."),
+    [("ivan.com","Please match the requested format."),
      ], ids=["invalid_format"])
 def test_email_validate(registration_page,bad_email,error_text):
     registration_page.open()

@@ -5,7 +5,7 @@ import allure
 
 load_dotenv()
 
-@pytest.fixture(scope="function")
+@pytest.fixture(scope="session")
 def base_url():
     return "https://reqres.in/api"
 
