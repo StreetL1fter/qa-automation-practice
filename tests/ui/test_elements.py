@@ -36,15 +36,34 @@ def test_search_input(cataloge_page,product):
     assert item_count > 0, f"Товаров найден было - {item_count}"
 
 
-@pytest.mark.parametrize("product",["xiaomi","iphone"])
+@pytest.mark.parametrize("product",["Xiaomi","Iphone"])
 def test_basket_item(page,cataloge_page,product):
+    page.route("**/*.{css,js,png,jpg,woff,woff2}", lambda route: route.continue_())
+    page.route(
+        "**/*basket*/**", lambda route: route.fulfill(
+            status=200,
+            content_type="application/json",
+            json={
+                "data": {
+                    "count": 1,
+                    "basket": {"value": 1}
+                }
+            }
+        )
+    )
     cataloge_page.open()
     cataloge_page.search_item(product)
-
     cataloge_page.add_first_item_to_basket()
-    
     count = cataloge_page.get_basket_count()
     allure.dynamic.description(f"Проверка добавления {product}. Получено товаров: {count}")
     assert count == "1", f"Ожидали 1 товар в корзине, но получили {count}"
 
 
+def test_db_wildberries(page,cataloge_page,db_connection):
+    cursor = db_connection.cursor()
+    user = cursor.execute(
+        "SELECT login,password FROM test_users WHERE status = 'active 1' LIMIT 1"
+    ).fetchone()
+    cataloge_page.open()
+    cataloge_page.login(user['login'], user['password'])
+    assert cataloge_page.get_logged_user_name() == user['login']

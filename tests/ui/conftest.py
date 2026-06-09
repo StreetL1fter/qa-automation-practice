@@ -1,17 +1,22 @@
 import pytest
 from playwright.sync_api import Browser, BrowserContext,sync_playwright
 from pages.elements_page import Elements
+import sqlite3 as sql
 from pages.cataloge_page import Catalog
 import allure
-
+import pytest
+from pages.demoblaze_page import DemoblazePage
+import sqlite3
 
 @pytest.fixture(scope="session")
 def browser():
     with sync_playwright() as p:
         browser = p.chromium.launch(
-            headless=True,
+            headless=False,
+            slow_mo=1000,
             args=[
-                 "--disable-blink-features=AutomationControlled",
+                "--disable-blink-features=AutomationControlled",
+                "--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
                 "--disable-dev-shm-usage",
                 "--no-sandbox"
             ]
@@ -60,4 +65,61 @@ def cataloge_page(page):
         name="screenshot",
         attachment_type=allure.attachment_type.PNG
     ) 
+
     return catalog_page
+
+
+@pytest.fixture
+def db_connection():
+    conn = sql.connect("autotest-unit.db")
+    conn.row_factory = sql.Row
+    cursor = conn.cursor()
+    cursor.execute("""
+
+    CREATE TABLE IF NOT EXISTS test_users (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                login TEXT NOT NULL,
+                password TEXT NOT NULL,
+                status TEXT NOT NULL
+            )        
+    """)
+    cursor.execute("DELETE FROM test_users")
+    cursor.execute(
+        "INSERT INTO test_users (login, password, status) VALUES (?, ?, ?)",
+        ("ismail_test", "SecretPassword123", "active")
+    )
+    cursor.execute(
+        "INSERT INTO test_users (login, password, status) VALUES (?, ?, ?)",
+        ("banned_user", "WrongPassword", "banned")
+    )
+    conn.commit()
+    yield conn
+
+    conn.close()
+
+
+
+
+#Demoblaze
+
+@pytest.fixture
+def demo_page(page):
+    return DemoblazePage(page)
+
+
+@pytest.fixture(scope="function")
+def db_connection():
+    conn = sqlite3.connect("autotest-unit.db")
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+    cursor.execute("CREATE TABLE IF NOT EXISTS test_users (id INTEGER PRIMARY KEY, login TEXT, password TEXT, status TEXT)")
+    cursor.execute("DELETE FROM test_users")
+    cursor.execute("INSERT INTO test_users (login, password, status) VALUES (?, ?, ?)", 
+                   ("ismail_test", "SecretPassword123", "active"))
+    cursor.execute(
+        "INSERT INTO test_users (login, password, status) VALUES (?, ?, ?)",
+        ("banned_user", "WrongPassword", "banned")  
+    )
+    conn.commit()
+    yield conn
+    conn.close()
