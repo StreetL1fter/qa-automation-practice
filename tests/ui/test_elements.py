@@ -40,7 +40,8 @@ def test_search_input(cataloge_page,product):
 def test_basket_item(page,cataloge_page,product):
     page.route("**/*.{css,js,png,jpg,woff,woff2}", lambda route: route.continue_())
     page.route(
-        "**/*basket*/**", lambda route: route.fulfill(
+        "**/lk-basket/**",
+        lambda route: route.fulfill(
             status=200,
             content_type="application/json",
             json={
@@ -57,7 +58,6 @@ def test_basket_item(page,cataloge_page,product):
     count = cataloge_page.get_basket_count()
     allure.dynamic.description(f"Проверка добавления {product}. Получено товаров: {count}")
     assert count == "1", f"Ожидали 1 товар в корзине, но получили {count}"
-
 
 
 
