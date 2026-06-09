@@ -12,7 +12,7 @@ import sqlite3
 def browser():
     with sync_playwright() as p:
         browser = p.chromium.launch(
-            headless=False,
+            headless=True,
             slow_mo=1000,
             args=[
                 "--disable-blink-features=AutomationControlled",
