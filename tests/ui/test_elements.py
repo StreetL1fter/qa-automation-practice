@@ -60,3 +60,4 @@ def test_basket_item(page,cataloge_page,product):
 
 
 
+
