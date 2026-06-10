@@ -10,4 +10,5 @@ RUN python -m pip install --no-cache-dir --upgrade pip && \
 
 COPY . .
 
-CMD ["python3", "-m", "pytest", "--alluredir=allure-results"]
+ENTRYPOINT ["python3", "-m", "pytest"]
+CMD ["--alluredir=allure-results"]

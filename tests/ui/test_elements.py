@@ -16,6 +16,8 @@ def test_registration_form(registration_page,first_name,last_name,email,phone):
 
     assert is_visible
         
+
+@pytest.mark.regression
 @pytest.mark.parametrize("bad_email,error_text",
     [("ivan.com","Please match the requested format."),
      ], ids=["invalid_format"])
@@ -27,7 +29,8 @@ def test_email_validate(registration_page,bad_email,error_text):
     assert registration_page.get_error_message() == error_text
     
 
-
+@pytest.mark.smoke
+@pytest.mark.regression
 @pytest.mark.parametrize("product",["macbook","iphone","ноутбук","борцовки"])
 def test_search_input(cataloge_page,product):
     assert_open = cataloge_page.open()
@@ -36,6 +39,8 @@ def test_search_input(cataloge_page,product):
     assert item_count > 0, f"Товаров найден было - {item_count}"
 
 
+@pytest.mark.smoke
+@pytest.mark.regression
 @pytest.mark.parametrize("product",["Xiaomi","Iphone"])
 def test_basket_item(page,cataloge_page,product):
     page.route("**/*.{css,js,png,jpg,woff,woff2}", lambda route: route.continue_())

@@ -3,6 +3,8 @@ import pytest
 import random
 import allure
 
+@pytest.mark.smoke
+@pytest.mark.regression
 def test_full_user_lifecycle(demo_page, db_connection):
     unique_id = random.randint(100, 999)
     test_user = f"ismail_{unique_id}"
@@ -28,6 +30,7 @@ def test_full_user_lifecycle(demo_page, db_connection):
     actual_name = demo_page.get_logged_user_name()
     assert user_from_db['login'] in actual_name
 
+@pytest.mark.regression
 def test_login_banned_user(demo_page, db_connection):
     cursor = db_connection.cursor()
     user_banned = cursor.execute(
