@@ -68,19 +68,16 @@ def test_user_purchase_with_db_validation(page, demo_page, db_connection):
         # Открываем сайт
         page.goto("https://www.demoblaze.com/")
         
-        # Кликаем "Sign up", вводим данные и регистрируем
         page.locator("#signin2").click()
         page.locator("#sign-username").fill(test_user)
         page.locator("#sign-password").fill(test_password)
         
-        # Перехватываем алерт об успешной регистрации ("Sign up successful.")
         page.once("dialog", lambda dialog: dialog.accept())
         page.get_by_role("button", name="Sign up").click()
         page.wait_for_timeout(1000) # Даем секунду серверу
 
     with allure.step("Авторизация пользователя на UI платформы Demoblaze"):
         page.goto(demo_page.URL if hasattr(demo_page, 'URL') else "https://www.demoblaze.com/")
-        # Проходим авторизацию под существующим в БД пользователем
         demo_page.login(test_user, test_password, expect_success=True)
 
     with allure.step(f"Имитация добавления товара '{product_name}' в корзину"):
@@ -89,12 +86,10 @@ def test_user_purchase_with_db_validation(page, demo_page, db_connection):
     with allure.step("Эмуляция транзакции: запись совершенного заказа в таблицу 'orders'"):
         cursor = db_connection.cursor()
         
-        # Сначала получаем динамический id пользователя из таблицы test_users
         cursor.execute("SELECT id FROM test_users WHERE login = ?", (test_user,))
         user_row = cursor.fetchone()
         user_id = user_row["id"]
         
-        # Записываем заказ, жестко привязывая его к Foreign Key (user_id) нашего юзера
         cursor.execute(
             "INSERT INTO orders (item_name, price, user_id) VALUES (?, ?, ?)",
             (product_name, product_price, user_id)
@@ -104,10 +99,8 @@ def test_user_purchase_with_db_validation(page, demo_page, db_connection):
     with allure.step("Валидация данных: проверка связки таблиц 'test_users' и 'orders' через INNER JOIN"):
         orders_in_db = check_user_orders_in_db(test_user, db_connection)
         
-        # Проверяем, что вернулся ровно 1 заказ
         assert len(orders_in_db) == 1, f"Ожидался 1 заказ в БД для {test_user}, но найдено {len(orders_in_db)}"
         
-        # Проверяем корректность данных в строке (благодаря sqlite3.Row обращаемся по именам колонок)
         assert orders_in_db[0]["item_name"] == product_name, \
             f"Ожидался товар {product_name}, но в базе записан {orders_in_db[0]['item_name']}"
             
