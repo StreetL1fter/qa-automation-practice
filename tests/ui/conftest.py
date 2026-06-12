@@ -112,7 +112,17 @@ def db_connection():
     conn = sqlite3.connect("autotest-unit.db")
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
+    cursor.execute("PRAGMA foreign_keys = ON;")
     cursor.execute("CREATE TABLE IF NOT EXISTS test_users (id INTEGER PRIMARY KEY, login TEXT, password TEXT, status TEXT)")
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS orders (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            item_name TEXT NOT NULL,
+            price REAL NOT NULL,
+            user_id INTEGER,
+            FOREIGN KEY (user_id) REFERENCES test_users(id) ON DELETE CASCADE
+        )
+    ''')
     cursor.execute("DELETE FROM test_users")
     cursor.execute("INSERT INTO test_users (login, password, status) VALUES (?, ?, ?)", 
                    ("ismail_test", "SecretPassword123", "active"))

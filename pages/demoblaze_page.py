@@ -8,7 +8,7 @@ class DemoblazePage:
         self.login_password_field = "#loginpassword"
         self.login_submit_button = "#logInModal .btn-primary"
         self.name_user_display = "#nameofuser"
-
+        self.add_to_cart_button = page.get_by_role("link", name="Add to cart")
     @allure.step("Открыть главную страницу Demoblaze")
     def open(self):
         self.page.goto("https://www.demoblaze.com/")
@@ -39,3 +39,11 @@ class DemoblazePage:
     @allure.step("Получить имя авторизованного пользователя")
     def get_logged_user_name(self):
         return self.page.locator(self.name_user_display).text_content()
+    
+
+    def add_product_to_cart(self, product_name: str):
+        self.page.once("dialog", lambda dialog: dialog.accept())
+        self.page.get_by_role("link", name=product_name,exact=True).click()
+        self.add_to_cart_button.wait_for(state="visible", timeout=15000)
+        self.add_to_cart_button.click()
+        self.page.wait_for_timeout(1000)
