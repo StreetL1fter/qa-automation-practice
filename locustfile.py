@@ -1,7 +1,20 @@
 from locust import HttpUser, task, between
+import uuid
 
 class ProjectPerformanceUser(HttpUser):
-    wait_time = between(1, 3)
+    wait_time = between(3, 7)
+    def on_start(self):
+        self.username = f"user_{uuid.uuid4().hex[:8]}"
+        self.password = "secure_password123"
+        payload = {
+            "username": self.username,
+            "password": self.password
+        }
+        response = self.client.post("/login", json=payload)
+        if response.status_code == 200:
+            print(f"Пользователь {self.username} успешно авторизован под нагрузкой!")
+        else:
+            print(f"Ошибка авторизации пользователя {self.username}")
     @task(3)
     def view_catalog(self):
         self.client.get("/entries")

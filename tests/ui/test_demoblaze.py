@@ -51,7 +51,7 @@ def check_user_orders_in_db(username,db_connection):
         WHERE test_users.login = ?
     '''
     cursor.execute(query, (username,))
-    result = cursor.fetchall() # Получаем все заказы пользователя
+    result = cursor.fetchall()
     return result
 
 
@@ -65,7 +65,6 @@ def test_user_purchase_with_db_validation(page, demo_page, db_connection):
     product_price = 360.0
 
     with allure.step("Регистрация пользователя на реальном сайте Demoblaze"):
-        # Открываем сайт
         page.goto("https://www.demoblaze.com/")
         
         page.locator("#signin2").click()
@@ -74,7 +73,7 @@ def test_user_purchase_with_db_validation(page, demo_page, db_connection):
         
         page.once("dialog", lambda dialog: dialog.accept())
         page.get_by_role("button", name="Sign up").click()
-        page.wait_for_timeout(1000) # Даем секунду серверу
+        page.wait_for_timeout(1000) 
 
     with allure.step("Авторизация пользователя на UI платформы Demoblaze"):
         page.goto(demo_page.URL if hasattr(demo_page, 'URL') else "https://www.demoblaze.com/")

@@ -83,6 +83,7 @@ def db_connection():
                 status TEXT NOT NULL
             )        
     """)
+    cursor.execute("CREATE UNIQUE INDEX IF NOT EXISTS idx_users_username ON users(username);")
     cursor.execute("DELETE FROM test_users")
     cursor.execute(
         "INSERT INTO test_users (login, password, status) VALUES (?, ?, ?)",
