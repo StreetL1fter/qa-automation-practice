@@ -1,0 +1,12 @@
+# Виртуальное окружение
+venv/
+.env
+
+# Кеш Python и pytest
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Отчеты (если генерируются локально)
+allure-results/
+allure-report/
