@@ -1,5 +1,9 @@
 from locust import HttpUser, task, between
 import uuid
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 class ProjectPerformanceUser(HttpUser):
     wait_time = between(3, 7)
@@ -12,9 +16,9 @@ class ProjectPerformanceUser(HttpUser):
         }
         response = self.client.post("/login", json=payload)
         if response.status_code == 200:
-            print(f"Пользователь {self.username} успешно авторизован под нагрузкой!")
+            logger.info(f"Пользователь {self.username} успешно авторизован под нагрузкой")
         else:
-            print(f"Ошибка авторизации пользователя {self.username}")
+            logger.info(f"Ошибка пользователя {self.username}")
     @task(3)
     def view_catalog(self):
         self.client.get("/entries")
