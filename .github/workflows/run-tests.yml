@@ -19,3 +19,9 @@ jobs:
 
       - name: Run Tests inside Docker
         run: docker run --rm wb-automation-tests
+      - name: Run tests inside Docker
+        env:
+          REQRES_API_KEY: ${{ secrets.REQRES_API_KEY }} 
+        run: |
+          # Флаг -e передает переменную из GitHub внутрь Docker-контейнера
+          docker run --rm -e REQRES_API_KEY=$REQRES_API_KEY wb-automation-tests
