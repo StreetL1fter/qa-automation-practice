@@ -24,3 +24,4 @@ jobs:
           REQRES_API_KEY: ${{ secrets.REQRES_API_KEY }}
         run: |
           docker run --rm -e REQRES_API_KEY="${{ secrets.REQRES_API_KEY }}" wb-automation-tests
+          
