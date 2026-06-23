@@ -27,3 +27,4 @@ class ProjectPerformanceUser(HttpUser):
     def view_phone_category(self):
         payload = {"cat": "phone"}
         self.client.post("/bycat", json=payload)
+        
