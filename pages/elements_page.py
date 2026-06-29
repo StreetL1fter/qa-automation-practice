@@ -44,6 +44,7 @@ class Elements:
     def is_success_modal_visible(self):
         return self.page.locator(self.MODAL_BODY).is_visible()
         
+        
 
     
         
